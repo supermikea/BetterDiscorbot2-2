@@ -11,6 +11,7 @@ start_time = time.time()
 # initial bot setup
 
 intents = nextcord.Intents.default()
+intents.message_content = True
 activity = nextcord.Activity(name="You", type=nextcord.ActivityType.watching, state="watching YOU")
 bot = commands.Bot(command_prefix="~", intents=intents, activity=activity)
 

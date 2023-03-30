@@ -1,6 +1,7 @@
 import os
 import random as rt
 import sys
+import time
 
 import nextcord
 from nextcord import SlashOption
@@ -8,7 +9,7 @@ from nextcord import SlashOption
 from nextcord.ext import commands, tasks
 
 # variables setup
-
+start_time = time.time()
 
 # initial bot setup
 
@@ -36,6 +37,9 @@ async def ping(interaction: nextcord.Interaction):
 async def echo(interaction: nextcord.Interaction, arg: str = SlashOption(description="message")):
     await interaction.send(arg)
 
+@bot.slash_command(description="prints the uptime of the bot")
+async def uptime(interaction: nextcord.Interaction):
+    await interaction.send(f"Uptime: {time.strftime('%H:%M:%S', time.time() - start_time)} seconds")
 
 # bot initiation code
 def write_read_f(option, token, location):  # write or read token from token file

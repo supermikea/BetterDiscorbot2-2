@@ -33,6 +33,9 @@ async def ping(interaction: nextcord.Interaction):
 async def echo(interaction: nextcord.Interaction, arg: str = SlashOption(description="message")):
     await interaction.send(arg)
 
+@bot.slash_command(description="prints the uptime of the bot")
+async def uptime(interaction: nextcord.Interaction):
+    await interaction.send(f"Uptime: {time.strftime('%H:%M:%S', time.time() - start_time)} seconds")
 
 @bot.slash_command(description="prints the uptime of the bot")
 async def uptime(interaction: nextcord.Interaction):

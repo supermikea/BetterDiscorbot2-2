@@ -1,19 +1,16 @@
-import os
-import random as rt
 import sys
+import time
 
 import nextcord
 from nextcord import SlashOption
-
-from nextcord.ext import commands, tasks
+from nextcord.ext import commands
 
 # variables setup
-
+start_time = time.time()
 
 # initial bot setup
 
 intents = nextcord.Intents.default()
-intents.message_content = True
 activity = nextcord.Activity(name="You", type=nextcord.ActivityType.watching, state="watching YOU")
 bot = commands.Bot(command_prefix="~", intents=intents, activity=activity)
 
@@ -37,6 +34,11 @@ async def echo(interaction: nextcord.Interaction, arg: str = SlashOption(descrip
     await interaction.send(arg)
 
 
+@bot.slash_command(description="prints the uptime of the bot")
+async def uptime(interaction: nextcord.Interaction):
+    await interaction.send(f"Uptime: {time.strftime('%H:%M:%S', time.gmtime(time.time() - start_time))} seconds")
+
+
 # bot initiation code
 def write_read_f(option, token, location):  # write or read token from token file
     if option == "w":
@@ -54,5 +56,6 @@ def write_read_f(option, token, location):  # write or read token from token fil
 token = write_read_f("r", 0, "/token")
 
 from music.music import *
+
 bot.add_cog(Music(bot))
 bot.run(token)

@@ -37,7 +37,8 @@ async def echo(interaction: nextcord.Interaction, arg: str = SlashOption(descrip
 
 @bot.slash_command(description="prints the uptime of the bot")
 async def uptime(interaction: nextcord.Interaction):
-    await interaction.send(f"Uptime: {time.strftime('%H:%M:%S', time.gmtime(time.time() - start_time))} seconds")
+    uptime = (time.time() - start_time) / 60 / 60
+    await interaction.send(f"Uptime: {uptime} hours")
 
 
 # bot initiation code

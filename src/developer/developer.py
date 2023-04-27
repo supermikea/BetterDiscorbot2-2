@@ -11,7 +11,7 @@ class developer(commands.Cog):
         self.bot = bot
 
     @commands.command()
-    def restart(self, ctx):
+    async def restart(self, ctx):
         if ctx.author == "supermikea#5051":
             os.execl(sys.executable, os.path.abspath(__file__), *sys.argv)
         else:

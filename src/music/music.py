@@ -54,7 +54,7 @@ class YTDLSource(nextcord.PCMVolumeTransformer):
             self.play_list = True
             self.entries = data["entries"]
 
-    # @classmethod
+    @classmethod
     async def play(cls, url, *, loop=None, stream=True):
         loop = loop or asyncio.get_event_loop()
         data = await loop.run_in_executor(None, lambda: ytdl.extract_info(url, download=not stream))

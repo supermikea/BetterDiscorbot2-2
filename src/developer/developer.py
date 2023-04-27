@@ -14,7 +14,7 @@ class developer(commands.Cog):
     async def restart(self, ctx):
         if str(ctx.author) == "supermikea#5051":
             await ctx.reply("Sure Mike!\n restarting...")
-            os.execl(sys.executable, os.path.abspath(__file__), "restarted")
+            os.execl(sys.executable, os.path.abspath(__file__), *sys.argv)
         else:
             await ctx.reply("https://tenor.com/view/no-way-dude-no-oh-bugs-bunny-bugs-gif-22941840")
     

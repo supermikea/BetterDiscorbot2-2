@@ -14,7 +14,7 @@ class developer(commands.Cog):
     async def restart(self, ctx):
         if str(ctx.author) == "supermikea#5051":
             await ctx.reply("Sure Mike!\n restarting...")
-            os.execl(sys.executable, os.path.abspath(__file__), *sys.argv)
+            os.execl(sys.executable, os.path.abspath(f"{__file__}/../main.py"), *sys.argv)
         else:
             await ctx.reply("https://tenor.com/view/no-way-dude-no-oh-bugs-bunny-bugs-gif-22941840")
     
@@ -23,6 +23,6 @@ class developer(commands.Cog):
         if str(ctx.author) == "supermikea#5051":
             await ctx.reply("Sure Mike!\n updating...")
             output = os.system("git pull")
-            await ctx.reply("Updated! here is the output:\n" + output)
+            # await ctx.reply("Updated! here is the output:\n" + output.)
         else:
             await ctx.reply("https://tenor.com/view/no-way-dude-no-oh-bugs-bunny-bugs-gif-22941840")

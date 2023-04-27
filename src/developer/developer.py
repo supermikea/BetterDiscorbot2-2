@@ -38,6 +38,7 @@ class developer(commands.Cog):
             with open('log.log', 'rb') as f:
                 log_file = nextcord.File(fp=f, filename="log.txt", description="your log mike")
             await ctx.send(file=log_file)
+            sys.stdout = open('log.log', 'w')
         else:
             await ctx.reply("https://tenor.com/view/no-way-dude-no-oh-bugs-bunny-bugs-gif-22941840")
 

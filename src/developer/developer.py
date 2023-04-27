@@ -17,7 +17,7 @@ class developer(commands.Cog):
     async def restart(self, ctx):
         if str(ctx.author) == "supermikea#5051":
             await ctx.reply("Sure Mike!\n restarting...")
-            os.execl(sys.executable, "python3 /home/ubuntu/BetterDiscorbot2-2/src/main.py", *sys.argv)
+            os.system("python3 \"/home/ubuntu/BetterDiscorbot2-2/src/main.py\"")
             sys.exit()
         else:
             await ctx.reply("https://tenor.com/view/no-way-dude-no-oh-bugs-bunny-bugs-gif-22941840")
@@ -31,6 +31,7 @@ class developer(commands.Cog):
         else:
             await ctx.reply("https://tenor.com/view/no-way-dude-no-oh-bugs-bunny-bugs-gif-22941840")
     
+    @commands.command()
     async def get_log(self, ctx):
         if str(ctx.author) == "supermikea#5051":
             await ctx.reply("Sure Mike!\n Uploading log...")

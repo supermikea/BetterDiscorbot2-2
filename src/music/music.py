@@ -140,6 +140,9 @@ class Music(commands.Cog):
     async def after_voice(self, ctx):
         if not self.queue_method.is_running():
             self.queue_method.start(ctx)
+        
+        if not self.queue_method.is_running():
+            self.no_afk.start(ctx)
 
     @tasks.loop(seconds=1)
     async def queue_method(self, ctx):
@@ -148,3 +151,8 @@ class Music(commands.Cog):
                 await self.play(context=ctx, url=queue.pop(0))
             except IndexError:
                 pass
+    
+    @tasks.loop(seconds=43200)
+    async def no_afk(self,ctx):
+        if not ctx.voice_client.is_playing() and not queue:
+            await ctx.voice_client.disconnect()

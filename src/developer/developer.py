@@ -1,7 +1,6 @@
 import asyncio
 import os
 import sys
-from cStringIO import StringIO
 
 import nextcord
 from nextcord.ext import commands, tasks

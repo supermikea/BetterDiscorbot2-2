@@ -54,15 +54,15 @@ class YTDLSource(nextcord.PCMVolumeTransformer):
             self.play_list = True
             self.entries = data["entries"]
 
-    @classmethod
-    async def play(cls, url, *, loop=None, stream=True):
+
+    async def play(self, cls, url, *, loop=None, stream=True):
         loop = loop or asyncio.get_event_loop()
         data = await loop.run_in_executor(None, lambda: ytdl.extract_info(url, download=not stream))
         # print(data)
 
         if "entries" in data:
             # take the entry given from the user
-            data = data["entries"][0]# [self.play_list_index]
+            data = data["entries"][0][self.play_list_index]
 
         filename = data["url"] if stream else ytdl.prepare_filename(data)
         return cls(nextcord.FFmpegPCMAudio(filename, **ffmpeg_options), data=data)

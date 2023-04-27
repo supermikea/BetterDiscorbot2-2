@@ -48,7 +48,7 @@ class YTDLSource(nextcord.PCMVolumeTransformer):
         self.title = data.get("title")
         self.url = data.get("url")
         self.duration = data.get("duration_string")
-        # self.play_list_index = data.get("playlist_index")
+        self.play_list_index = data.get("playlist_index")
         if "entries" in data:
             print("[DEBUG] Detected Playlist")
             self.play_list = True
@@ -62,7 +62,7 @@ class YTDLSource(nextcord.PCMVolumeTransformer):
 
         if "entries" in data:
             # take the entry given from the user
-            data = data["entries"][self.play_list_index]
+            data = data["entries"][data.get("playlist_index")]
 
         filename = data["url"] if stream else ytdl.prepare_filename(data)
         return cls(nextcord.FFmpegPCMAudio(filename, **ffmpeg_options), data=data)

@@ -26,8 +26,8 @@ class developer(commands.Cog):
     async def update(self, ctx):
         if str(ctx.author) == "supermikea#5051":
             await ctx.reply("Sure Mike!\n updating...")
-            output = subprocess.run(["git","pull"], capture_output=True)
-            await ctx.reply("Updated? here is the output:\n" + output)
+            output = subprocess.run(["git","pull"], capture_output=True).stdout
+            await ctx.reply("Updated? here is the output:\n" + output.decode("utf-8"))
         else:
             await ctx.reply("https://tenor.com/view/no-way-dude-no-oh-bugs-bunny-bugs-gif-22941840")
     

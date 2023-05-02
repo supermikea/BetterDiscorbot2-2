@@ -159,9 +159,6 @@ class Music(commands.Cog):
 
     @tasks.loop(seconds=1)
     async def queue_method(self, ctx):
-        
-        with open("../live_config.json", "rw") as f:
-            data = json.load(f)
 
         if not ctx.voice_client.is_playing():
             try:

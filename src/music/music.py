@@ -12,6 +12,8 @@ context1 = None
 queue = []
 player = None
 arg = None
+live_update = False
+paused = False
 
 # threads
 t_counter = 0
@@ -65,7 +67,7 @@ class YTDLSource(nextcord.PCMVolumeTransformer):
             data = data["entries"][0]
 
         filename = data["url"] if stream else ytdl.prepare_filename(data)
-        return cls(nextcord.FFmpegPCMAudio(filename, **ffmpeg_options), data=data)
+        return cls(nextcord.FFmpegOpusAudio(filename,bitrate=320 ,**ffmpeg_options), data=data)
 
 
 class Music(commands.Cog):
@@ -127,6 +129,14 @@ class Music(commands.Cog):
         ctx.voice_client.stop()
         await ctx.voice_client.disconnect()
 
+    @commands.command()
+    async def pause(self, ctx):
+        """Pause the bot from palying voice"""
+        if paused:
+            pass
+        else:
+            pass
+
     @play.before_invoke
     async def ensure_voice(self, ctx):
         if ctx.voice_client is None:
@@ -146,6 +156,10 @@ class Music(commands.Cog):
 
     @tasks.loop(seconds=1)
     async def queue_method(self, ctx):
+        
+        with open("../live_config.json", "rw") as f:
+            data = json.load(f)
+
         if not ctx.voice_client.is_playing():
             try:
                 await self.play(context=ctx, url=queue.pop(0))

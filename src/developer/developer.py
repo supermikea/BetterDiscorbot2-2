@@ -5,6 +5,8 @@ import subprocess
 import nextcord
 from nextcord.ext import commands, tasks
 
+import json
+
 # global vars
 # sys.stdout = open('log.log', 'w')
 
@@ -36,6 +38,16 @@ class developer(commands.Cog):
     async def live_update(self, ctx):
         if str(ctx.author) == "supermikea#5051":
             await ctx.reply("TODO: Not implemented!")
+            #await ctx.reply("hooking onto the latest player instance...")
+            #with open("../live_config.json", "rw") as f:
+            #    data = json.load(f)
+            #    to_write = {
+            #        "live_update": True
+            #    }
+
+                # merge the dictionaries
+            #    to_write = data | to_write
+
         else:
             await ctx.reply("https://tenor.com/view/no-way-dude-no-oh-bugs-bunny-bugs-gif-22941840")
     @commands.command()

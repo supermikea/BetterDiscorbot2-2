@@ -34,6 +34,9 @@ ytdl_format_options = {
     "no_warnings": False,
     "default_search": "auto",
     "source_address": "0.0.0.0",  # bind to ipv4 since ipv6 addresses cause issues sometimes
+    'postprocessors': [{  # Extract audio using ffmpeg
+        'key': 'FFmpegExtractAudio',
+        'preferredcodec': 'opus',}]
 }
 
 ffmpeg_options = {"options": "-vn", 'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5'}

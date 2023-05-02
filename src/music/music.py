@@ -23,7 +23,7 @@ b1 = None
 # youtube_dl.utils.bug_reports_message = lambda: ""
 
 ytdl_format_options = {
-    "format": "m4a/bestaudio/best",
+    "format": "flac/bestaudio/best",
     "outtmpl": "%(extractor)s-%(id)s-%(title)s.%(ext)s",
     "restrictfilenames": True,
     "noplaylist": False,
@@ -36,10 +36,10 @@ ytdl_format_options = {
     "source_address": "0.0.0.0",  # bind to ipv4 since ipv6 addresses cause issues sometimes
     'postprocessors': [{  # Extract audio using ffmpeg
         'key': 'FFmpegExtractAudio',
-        'preferredcodec': 'm4a',}]
+        'preferredcodec': 'flac',}]
 }
 
-ffmpeg_options = {"options": "-vn", 'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5'}
+ffmpeg_options = {"options": "-vn -b:a 320 -c flac", 'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5'}
 
 ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
 

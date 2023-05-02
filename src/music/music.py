@@ -36,7 +36,7 @@ ytdl_format_options = {
     "source_address": "0.0.0.0",  # bind to ipv4 since ipv6 addresses cause issues sometimes
 }
 
-ffmpeg_options = {"options": "-vn -b:a 320 -c flac", 'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5'}
+ffmpeg_options = {"options": "-vn -b:a 320", 'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5'}
 
 ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
 

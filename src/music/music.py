@@ -152,7 +152,7 @@ class Music(commands.Cog):
             except IndexError:
                 pass
     
-    @tasks.loop(seconds=43200)
+    @tasks.loop(seconds=600)
     async def no_afk(self,ctx):
-        if not ctx.voice_client.is_playing() and not queue:
+        if not ctx.voice_client.is_playing():
             await ctx.voice_client.disconnect()

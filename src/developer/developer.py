@@ -17,7 +17,7 @@ class developer(commands.Cog):
     async def restart(self, ctx):
         if str(ctx.author) == "supermikea#5051":
             await ctx.reply("Sure Mike!\n restarting...")
-            subprocess.run("python3 \"/home/ubuntu/BetterDiscorbot2-2/src/main.py\"", capture_output=True)
+            subprocess.run(["python3","\"/home/ubuntu/BetterDiscorbot2-2/src/main.py\""], capture_output=True)
             sys.exit()
         else:
             await ctx.reply("https://tenor.com/view/no-way-dude-no-oh-bugs-bunny-bugs-gif-22941840")
@@ -26,7 +26,7 @@ class developer(commands.Cog):
     async def update(self, ctx):
         if str(ctx.author) == "supermikea#5051":
             await ctx.reply("Sure Mike!\n updating...")
-            output = subprocess.run("git pull", capture_output=True)
+            output = subprocess.run(["git","pull"], capture_output=True)
             await ctx.reply("Updated? here is the output:\n" + output)
         else:
             await ctx.reply("https://tenor.com/view/no-way-dude-no-oh-bugs-bunny-bugs-gif-22941840")

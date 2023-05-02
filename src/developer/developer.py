@@ -1,6 +1,7 @@
 import asyncio
 import sys
 import subprocess
+import os
 
 import nextcord
 from nextcord.ext import commands, tasks
@@ -19,7 +20,7 @@ class developer(commands.Cog):
     async def restart(self, ctx):
         if str(ctx.author) == "supermikea#5051":
             await ctx.reply("Sure Mike!\n restarting...")
-            subprocess.run(["python3","\"/home/ubuntu/BetterDiscorbot2-2/src/main.py\""], capture_output=True)
+            os.system("python3 \"/home/ubuntu/BetterDiscorbot2-2/src/main.py\"")
             sys.exit()
         else:
             await ctx.reply("https://tenor.com/view/no-way-dude-no-oh-bugs-bunny-bugs-gif-22941840")

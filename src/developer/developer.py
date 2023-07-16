@@ -19,7 +19,7 @@ class developer(commands.Cog):
 
     @commands.command()
     async def restart(self, ctx):
-        if str(ctx.author) == "supermikea#5051":
+        if str(ctx.author) == "supermikea":
             await ctx.reply("Sure Mike!\n restarting...")
             os.system("python3 \"/home/ubuntu/BetterDiscorbot2-2/src/main.py\" &")
             sys.exit()
@@ -28,7 +28,7 @@ class developer(commands.Cog):
     
     @commands.command()
     async def update(self, ctx):
-        if str(ctx.author) == "supermikea#5051":
+        if str(ctx.author) == "supermikea":
             await ctx.reply("Sure Mike!\n updating...")
             output = subprocess.run(["git","pull"], capture_output=True).stdout
             await ctx.reply("Updated? here is the output:\n" + output.decode("utf-8"))
@@ -38,7 +38,7 @@ class developer(commands.Cog):
 
     @commands.command()
     async def live_update(self, ctx):
-        if str(ctx.author) == "supermikea#5051":
+        if str(ctx.author) == "supermikea":
             await ctx.reply("TODO: Not implemented!")
             #await ctx.reply("hooking onto the latest player instance...")
             #with open("../live_config.json", "rw") as f:
@@ -54,7 +54,7 @@ class developer(commands.Cog):
             await ctx.reply("https://tenor.com/view/no-way-dude-no-oh-bugs-bunny-bugs-gif-22941840")
     @commands.command()
     async def get_log(self, ctx):
-        if str(ctx.author) == "supermikea#5051":
+        if str(ctx.author) == "supermikea":
             await ctx.reply("it broken sooooooooooo no...")
             
             # await ctx.reply("Sure Mike!\n Uploading log...")

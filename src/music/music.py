@@ -7,6 +7,7 @@ import yt_dlp as youtube_dl
 from nextcord.ext import commands, tasks
 
 # global variables
+falsequeue = []
 playing = False
 context1 = None
 queue = []
@@ -70,19 +71,13 @@ class YTDLSource(nextcord.PCMVolumeTransformer):
         return cls(nextcord.FFmpegPCMAudio(filename, **ffmpeg_options), data=data)
 
 
-class Music(commands.Cog):
-    def __init__(self, bot):
+class E_url:
+    def __init__(self, url):
+        self.url = url
+        self.title = ytdl.extract_info(url, download=False).get("title")
 
-        self.bot = bot
-
-    @commands.command()
-    async def join(self, ctx, *, channel: nextcord.VoiceChannel):
-        """Joins a voice channel"""
-
-        if ctx.voice_client is not None:
-            return await ctx.voice_client.move_to(channel)
-
-        await channel.connect()
+    def __str__(self):
+        return self.title
 
     @commands.command()
     async def play(self, ctx, *, url):
@@ -90,8 +85,10 @@ class Music(commands.Cog):
         """Streams from a URL (same as yt, but doesn't predownload)"""
 
         if ctx.voice_client.is_playing():
+            title = ytdl.extract_info(url, download=False).get("title")
+            falsequeue.append(title)
             queue.append(url)
-            await ctx.send(f"added {url} to the queue")
+            await ctx.send(f"added {title} to the queue")
             return
 
         async with ctx.typing():
@@ -105,8 +102,8 @@ class Music(commands.Cog):
 
     @commands.command()
     async def queue(self, ctx):
-        global queue
-        await ctx.send(f"the queue is: {queue}")
+        global falsequeue
+        await ctx.send(f"the queue is: {falsequeue}")
 
     @commands.command()
     async def skip(self, ctx):
@@ -131,7 +128,7 @@ class Music(commands.Cog):
 
     @commands.command()
     async def pause(self, ctx):
-        """Pause the bot from palying voice"""
+        """Pause the bot from playing voice"""
         if paused:
             pass
         else:

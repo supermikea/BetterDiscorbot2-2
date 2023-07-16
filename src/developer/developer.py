@@ -71,5 +71,10 @@ class developer(commands.Cog):
         async with open("log.log", "w") as log:
             log.write(f"\n{ctx.author} said in {ctx.channel} at {time.time()} {ctx.message} which gave {error}")
 
+    @commands.command(hidden=True)
+    async def create_error(self, ctx):
+        await ctx.repley(0 / 0)
+
+
 if __name__ == "__main__":
     os.system('python3 "../main.py"')

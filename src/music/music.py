@@ -71,13 +71,10 @@ class YTDLSource(nextcord.PCMVolumeTransformer):
         return cls(nextcord.FFmpegPCMAudio(filename, **ffmpeg_options), data=data)
 
 
-class Music:
-    def __init__(self, url):
-        self.url = url
-        self.title = ytdl.extract_info(url, download=False).get("title")
+class Music(commands.Cog):
 
-    def __str__(self):
-        return self.title
+    def __init__(self, bot):
+        self.bot = bot
 
     @commands.command()
     async def play(self, ctx, *, url):

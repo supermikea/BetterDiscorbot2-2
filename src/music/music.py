@@ -37,7 +37,8 @@ ytdl_format_options = {
     "source_address": "0.0.0.0",  # bind to ipv4 since ipv6 addresses cause issues sometimes
 }
 
-ffmpeg_options = {"options": "-vn -b:a 320k", 'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5'}
+ffmpeg_options = {"options": "-vn -b:a 320k",
+                  'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5'}
 
 ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
 
@@ -69,7 +70,6 @@ class YTDLSource(nextcord.PCMVolumeTransformer):
 
         filename = data["url"] if stream else ytdl.prepare_filename(data)
         return cls(nextcord.FFmpegPCMAudio(filename, **ffmpeg_options), data=data)
-
 
 
 class Music(commands.Cog):
@@ -145,7 +145,7 @@ class Music(commands.Cog):
     async def after_voice(self, ctx):
         if not self.queue_method.is_running():
             self.queue_method.start(ctx)
-        
+
         if not self.queue_method.is_running():
             self.no_afk.start(ctx)
 
@@ -155,10 +155,11 @@ class Music(commands.Cog):
         if not ctx.voice_client.is_playing():
             try:
                 await self.play(context=ctx, url=queue.pop(0))
+                falsequeue.pop(0)
             except IndexError:
                 pass
-    
+
     @tasks.loop(seconds=600)
-    async def no_afk(self,ctx):
+    async def no_afk(self, ctx):
         if not ctx.voice_client.is_playing():
             await ctx.voice_client.disconnect()

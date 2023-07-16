@@ -71,7 +71,7 @@ class YTDLSource(nextcord.PCMVolumeTransformer):
         return cls(nextcord.FFmpegPCMAudio(filename, **ffmpeg_options), data=data)
 
 
-class E_url:
+class Music:
     def __init__(self, url):
         self.url = url
         self.title = ytdl.extract_info(url, download=False).get("title")

@@ -19,11 +19,11 @@ ytdl_format_options = {
     "ignoreerrors": False,
     "logtostderr": True,
     "quiet": True,
-    "no_warnings": False,
+    "no_warnings": True,
     "default_search": "auto",
     "source_address": "0.0.0.0",  # bind to ipv4 since ipv6 addresses cause issues sometimes
 }
-# ffmpeg_options = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 10'}
+ffmpeg_options = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 10'}
 
 ytdl = yt_dlp.YoutubeDL(ytdl_format_options)
 
@@ -33,7 +33,7 @@ class YTDLSource(nextcord.PCMVolumeTransformer):
         super().__init__(source, volume)
 
         self.data = data
-
+        self.url = data.get("url")
         self.title = data.get("title")
 
     @classmethod
@@ -46,26 +46,38 @@ class YTDLSource(nextcord.PCMVolumeTransformer):
         #    data = data["entries"][0]
 
         filename = data["url"] if stream else ytdl.prepare_filename(data)
-        return cls(nextcord.FFmpegPCMAudio(filename), data=data)
+        return cls(nextcord.FFmpegPCMAudio(filename, **ffmpeg_options), data=data)
 
 
 class Music(commands.Cog):
     def __init__(self, bot):
         self.bot: commands.Bot = bot
-        self.queue: list = []
+        self.queue: list[YTDLSource] = []
 
     # noinspection PyUnboundLocalVariable
     @nextcord.slash_command(description="play something", guild_ids=test_servers)
-    async def play(self, interaction: nextcord.Interaction, url: str = SlashOption):
+    async def play(self, interaction: nextcord.Interaction, url: str = SlashOption,
+                   ask_priority: bool = SlashOption(name="ask priority", description="asks for priority from the call "
+                                                                                     "members, if the majority votes "
+                                                                                     "for you."
+                                                                                     "the song is placed at the "
+                                                                                     "front of the queue",
+                                                    required=False,
+                                                    default=False)):
         voice_state = interaction.user.voice
-        print("in play function")
+        # print("in play function")
         if not voice_state:
             await interaction.response.send_message("You are not connected to a voice channel!")
             return
 
+        if ask_priority:
+            title =
+            await interaction.send(f"{interaction.user} asked for ")
+
         # handle (potential) exceptions when connecting to voice channel
         try:
             voice_client: nextcord.VoiceClient = await voice_state.channel.connect()
+            voice_state.self_deaf = True
         except nextcord.ClientException:  # already in voice channel so it isn't a problem
             in_voice = True
         except asyncio.TimeoutError as e:
@@ -85,20 +97,52 @@ class Music(commands.Cog):
             return
 
         player = await YTDLSource.play(url, loop=self.bot.loop, stream=True)
-        voice_client.play(source=player, after=lambda e: print(f"Player error: {e}") if e else None)
+        try:
+            voice_client.play(source=player, after=lambda e: print(f"Player error: {e}") if e else None)
+        except nextcord.ClientException:  # already playing exception
+            return
         await interaction.response.send_message(f"Now Playing: {player.data['title']}")
 
     @nextcord.slash_command(description="display the queue", guild_ids=test_servers)
     async def queue(self, interaction: nextcord.Interaction):
-        await interaction.response.send_message(f"The Queue is:\n{[obj['title'] for obj in self.queue]}")
+        titles = "\n".join([f"- {i.title}" for i in self.queue])
+        await interaction.response.send_message(f"The Queue is:\n{titles}")
 
     @tasks.loop(seconds=1)
     async def queue_method(self, channel: nextcord.TextChannel):
         voice_client: nextcord.VoiceClient = self.bot.voice_clients[0]
-        if not voice_client.is_playing() and self.queue != []:
+        if not voice_client.is_playing() and self.queue != [] and not voice_client.is_paused():
             # print("not playing and queue not empty")
             player_data = self.queue.pop()
-            voice_client.play(source=player_data['url'], after=lambda e: print(f"Player error: {e}") if e else None)
-            await channel.send(f"Now playing: {player_data['title']}")
+            # print(player_data.url)
+            player = await YTDLSource.play(player_data.url, loop=self.bot.loop, stream=True)
+            voice_client.play(source=player, after=lambda e: print(f"Player error: {e}") if e else None)
+
+            await channel.send(f"Now playing: {player_data.title}")
         if not voice_client.is_playing() and self.queue == []:
             self.queue_method.stop()
+
+    @nextcord.slash_command(description="toggle pause", guild_ids=test_servers)
+    async def pause(self, interaction: nextcord.Interaction):
+        voice_client: nextcord.VoiceClient = self.bot.voice_clients[0]
+        if voice_client.is_paused():
+            voice_client.resume()
+            await interaction.send("Resumed!")
+        else:
+            voice_client.pause()
+            await interaction.send("Paused!")
+
+    @nextcord.slash_command(description="toggle pause", guild_ids=test_servers)
+    async def stop(self, interaction: nextcord.Interaction):
+        self.queue.clear()
+        self.queue_method.stop()
+        voice_client: nextcord.VoiceClient = self.bot.voice_clients[0]
+        voice_client.stop()
+        await voice_client.disconnect()
+        await interaction.send("Stopped and disconnected from vc")
+
+    @nextcord.slash_command(description="toggle pause", guild_ids=test_servers)
+    async def skip(self, interaction: nextcord.Interaction):
+        voice_client: nextcord.VoiceClient = self.bot.voice_clients[0]
+        voice_client.stop()
+        await interaction.send("Skipped the Song!")

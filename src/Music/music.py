@@ -57,11 +57,8 @@ class Music(commands.Cog):
     # noinspection PyUnboundLocalVariable
     @nextcord.slash_command(description="play something", guild_ids=test_servers)
     async def play(self, interaction: nextcord.Interaction, url: str = SlashOption,
-                   ask_priority: bool = SlashOption(name="ask priority", description="asks for priority from the call "
-                                                                                     "members, if the majority votes "
-                                                                                     "for you."
-                                                                                     "the song is placed at the "
-                                                                                     "front of the queue",
+                   ask_priority: bool = SlashOption(name="priority_queue",
+                                                    description="asks for priority from the call participants",
                                                     required=False,
                                                     default=False)):
         voice_state = interaction.user.voice
@@ -71,8 +68,15 @@ class Music(commands.Cog):
             return
 
         if ask_priority:
-            title =
-            await interaction.send(f"{interaction.user} asked for ")
+            title = ytdl.extract_info(url, download=False)["title"]
+            partial_message: nextcord.PartialInteractionMessage = \
+                await interaction.send(f"{interaction.user.display_name} asked to priority queue \"{title}\"")
+
+            inter_message: nextcord.InteractionMessage = await partial_message.fetch()
+            await inter_message.add_reaction("✅")
+            await inter_message.add_reaction("❎")
+            self.priority_method.start(inter_message, url)
+            return
 
         # handle (potential) exceptions when connecting to voice channel
         try:
@@ -87,21 +91,68 @@ class Music(commands.Cog):
             if not 'voice_client' in locals():  # check if voice_client is actually created
                 voice_client: nextcord.VoiceClient = self.bot.voice_clients[0]
 
+        await interaction.response.defer()
+
         if voice_client.is_playing():
             player = await YTDLSource.play(url, loop=self.bot.loop, stream=True)
             self.queue.append(player)
             # print(player.data["url"])
             if not self.queue_method.is_running():
                 self.queue_method.start(channel=interaction.channel)
-            await interaction.response.send_message(f"Added \"{player.data['title']}\" to the queue!")
+            await interaction.send(f"Added \"{player.data['title']}\" to the queue!")
             return
 
-        player = await YTDLSource.play(url, loop=self.bot.loop, stream=True)
+        try:
+            player = await YTDLSource.play(url, loop=self.bot.loop, stream=True)
+        except yt_dlp.utils.DownloadError:
+            if len(url) > 80:
+                await interaction.send("Consider using a shorter link (;")
+                return
+            await interaction.send("Couldn't find your song! Consider finding a different link.")
+            return
         try:
             voice_client.play(source=player, after=lambda e: print(f"Player error: {e}") if e else None)
         except nextcord.ClientException:  # already playing exception
             return
-        await interaction.response.send_message(f"Now Playing: {player.data['title']}")
+        await interaction.send(f"Now Playing: \"{player.data['title']}\"")
+
+    @tasks.loop(seconds=1)
+    async def priority_method(self, message: nextcord.InteractionMessage, url: str):
+        await asyncio.sleep(29)
+        voice_client: nextcord.VoiceClient = self.bot.voice_clients[0]
+        members_connected: list[nextcord.Member] = voice_client.channel.members
+        members_useful: list[nextcord.Member] = []
+        for member in members_connected:
+            if member.bot:
+                continue
+            # if member.voice.deaf or member.voice.self_deaf:
+            #    continue
+            members_useful.append(member)
+
+        reactions: list[nextcord.Reaction] = message.reactions
+        count = 0
+        target = len(members_useful) / 2
+        for reaction in reactions:
+            print(reaction)
+            async for user in reaction.users():
+                print(user)
+                if user in members_useful:
+                    count += 1
+        print(reactions)
+        print(count)
+        print(target)
+        print(members_connected)
+        print(members_useful)
+
+        if count > target:
+            player = await YTDLSource.play(url=url, loop=self.bot.loop, stream=True)
+            self.queue.insert(0, player)
+            await message.channel.send(f"Successfully voted to priority queue: \"{player.title}\"")
+        else:
+            player = await YTDLSource.play(url=url, loop=self.bot.loop, stream=True)
+            await message.channel.send(f"Vote Failed to priority queue: \"{player.title}\"")
+
+        self.priority_method.stop()
 
     @nextcord.slash_command(description="display the queue", guild_ids=test_servers)
     async def queue(self, interaction: nextcord.Interaction):

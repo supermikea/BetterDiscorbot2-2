@@ -6,6 +6,7 @@ from nextcord.ext import commands
 # import subcommands
 from General.general import General
 from Music.music import Music
+from Developer.developer import Developer
 
 intents = nextcord.Intents.all()
 intents.typing = True
@@ -30,7 +31,7 @@ def write_read_f(option, *_token, location):  # write or read token from token f
 if __name__ == "__main__":
     bot = commands.Bot(command_prefix='~', intents=intents, description="miauw")
     bot.add_cog(General(bot))
-    # print(General(bot).get_commands())
     bot.add_cog(Music(bot))
+    bot.add_cog(Developer(bot))
     token = write_read_f('~', location="/token")
     bot.run(token)

@@ -5,14 +5,12 @@ from nextcord.ext import commands
 
 # import subcommands
 from General.general import General
-from Music.music import Music
+from Music.music2 import Music
 from Developer.developer import Developer
 
+import mafic
+
 intents = nextcord.Intents.all()
-intents.typing = True
-intents.presences = False
-intents.message_content = True
-intents.voice_states = True
 
 
 def write_read_f(option, *_token, location):  # write or read token from token file
@@ -28,8 +26,28 @@ def write_read_f(option, *_token, location):  # write or read token from token f
     return r_token
 
 
+class Bot(commands.Bot):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # lavalink setup
+        self.pool = mafic.NodePool(self)
+        self.loop.create_task(self.add_nodes())
+
+        self.command_prefix = "~"
+        self.description = "miauw"
+
+    async def add_nodes(self):
+        await self.pool.create_node(
+            host="127.0.0.1",
+            port=2333,
+            label="MAIN",
+            password="mikeiscool",
+        )
+
+
 if __name__ == "__main__":
-    bot = commands.Bot(command_prefix='~', intents=intents, description="miauw")
+    bot = Bot(intents=intents)
     bot.add_cog(General(bot))
     bot.add_cog(Music(bot))
     bot.add_cog(Developer(bot))

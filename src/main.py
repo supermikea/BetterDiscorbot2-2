@@ -7,7 +7,7 @@ from nextcord.ext import commands
 
 # import subcommands
 from General.general import General
-from Music.music2 import Music
+from Music.music import Music
 from Developer.developer import Developer
 
 import mafic

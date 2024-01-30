@@ -25,7 +25,13 @@ class Music(commands.Cog):
         else:
             self.player = inter.guild.voice_client
 
-        tracks = await self.player.fetch_tracks(query)
+        # could take a while
+        await inter.response.defer()
+
+        try:
+            tracks = await self.player.fetch_tracks(query)
+        except Exception as e:
+            return await inter.send(f"Error while searching: {e}")
 
         if not tracks:
             return await inter.send("No tracks found.")

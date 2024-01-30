@@ -3,12 +3,32 @@ from nextcord import SlashOption
 from nextcord.ext import commands, tasks
 from nextcord.ext.commands import Bot
 
+import os
+import subprocess
+import sys
+
 test_servers = [1030579093659471913]
 
 
 class Developer(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+
+    @commands.check(commands.is_owner())
+    @commands.command(hidden=True)
+    async def restart(self, ctx):
+        await ctx.reply("Sure Mike!\n restarting...")
+        os.system("python3 \"/home/ubuntu/BetterDiscorbot2-2/src/main.py\" &")
+        sys.exit()
+
+
+    @commands.check(commands.is_owner())
+    @commands.command(hidden=True)
+    async def update(self, ctx):
+        await ctx.reply("Sure Mike!\n updating...")
+        output = subprocess.run(["git", "pull"], capture_output=True).stdout
+        await ctx.reply("Updated? here is the output:\n" + output.decode("utf-8"))
+
 
     @commands.check(commands.is_owner())
     @commands.command(hidden=True)

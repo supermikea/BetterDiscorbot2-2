@@ -5,6 +5,7 @@ from nextcord import SlashOption
 from nextcord.ext import commands, tasks
 
 import yt_dlp
+import mafic
 
 test_servers = [1030579093659471913]
 
@@ -103,7 +104,7 @@ class Music(commands.Cog):
             return
 
         try:
-            player = await YTDLSource.play(url, loop=self.bot.loop, stream=True)
+            player = 
         except yt_dlp.utils.DownloadError:
             if len(url) > 80:
                 await interaction.send("Consider using a shorter link (;")

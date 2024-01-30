@@ -1,49 +1,21 @@
 import sys
+import subprocess
 import time
 
 import nextcord
-from nextcord import SlashOption
 from nextcord.ext import commands
 
-# variables setup
-start_time = time.time()
+# import subcommands
+from General.general import General
+from Music.music import Music
+from Developer.developer import Developer
 
-# initial bot setup
+import mafic
 
-intents = nextcord.Intents.default()
-intents.message_content = True
-activity = nextcord.Activity(name="You", type=nextcord.ActivityType.watching, state="watching YOU")
-bot = commands.Bot(command_prefix="~", intents=intents, activity=activity)
-
-
-# signal that the bot is online
-@bot.event
-async def on_ready():
-    print(f"[INFO] started successfully!")
-    print(f"[INFO] Logged in as {bot.user} (ID: {bot.user.id})")
-    print(f"[INFO] Activity is: {bot.activity}")
+intents = nextcord.Intents.all()
 
 
-@bot.slash_command(description="Replies with \"Pong!\"")
-async def ping(interaction: nextcord.Interaction):
-    await interaction.send("Pong!", ephemeral=True)
-
-
-# repeats your message
-@bot.slash_command(description="Repeats your message")
-async def echo(interaction: nextcord.Interaction, arg: str = SlashOption(description="message")):
-    await interaction.send(arg)
-
-
-# prints the bot's uptime
-@bot.slash_command(description="prints the uptime of the bot")
-async def uptime(interaction: nextcord.Interaction):
-    _uptime = round((time.time() - start_time) / 60 / 60, 2)
-    await interaction.send(f"Uptime: {_uptime} hours")
-
-
-# bot initiation code
-def write_read_f(option, _token, location):  # write or read token from token file
+def write_read_f(option, *_token, location):  # write or read token from token file
     if option == "w":
         file = open(sys.path[0] + location, "w")
         file.write(_token)
@@ -56,12 +28,32 @@ def write_read_f(option, _token, location):  # write or read token from token fi
     return r_token
 
 
-token = write_read_f("r", 0, "/token")
+class Bot(commands.Bot):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
-from music.music import *
-from developer.developer import *
+        # lavalink setup
+        self.pool = mafic.NodePool(self)
+        self.loop.create_task(self.add_nodes())
+
+        self.command_prefix = "~"
+        self.description = "miauw"
+
+    async def add_nodes(self):
+        await self.pool.create_node(
+            host="127.0.0.1",
+            port=2333,
+            label="MAIN",
+            password="mikeiscool",
+        )
 
 
-bot.add_cog(Music(bot))
-bot.add_cog(developer(bot))
-bot.run(token)
+if __name__ == "__main__":
+    bot = Bot(intents=intents)
+    bot.add_cog(General(bot))
+    bot.add_cog(Music(bot))
+    bot.add_cog(Developer(bot))
+    token = write_read_f('~', location="/token")
+    # subprocess.Popen(["java", "-jar", "lavalink/Lavalink.jar"])
+    # time.sleep(5)  # give lavalink time to start
+    bot.run(token)

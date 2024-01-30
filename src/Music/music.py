@@ -56,7 +56,14 @@ class Music(commands.Cog):
         if not self.queue:
             return await inter.send("The queue is empty.")
 
-        await inter.send(f"Queue:\n{self.queue}")
+        # format it correctly
+        temp = ""
+        count = 0
+        for i in self.queue:
+            count += 1
+            temp += str(count) + ". " + i.title + "\n"
+
+        await inter.send(f"Queue:\n{temp}")
 
     @nextcord.slash_command(description="Pause the current song", guild_ids=test_servers)
     async def pause(self, inter: nextcord.Interaction):
@@ -103,9 +110,6 @@ class Music(commands.Cog):
     # queue loop
     @tasks.loop(seconds=1)
     async def queue_loop(self):
-        if not self.queue:
-            self.queue_loop.stop()
-            return
 
         if not self.player.current:
             track = self.queue.pop(0)

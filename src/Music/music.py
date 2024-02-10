@@ -127,3 +127,9 @@ class Music(commands.Cog):
 
         if self.player.paused:
             return
+
+        if self.player.current:
+            if self.queue:
+                track = self.queue.pop(0)
+                await self.player.play(track)
+                return

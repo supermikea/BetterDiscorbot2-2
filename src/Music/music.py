@@ -89,6 +89,7 @@ class Music(commands.Cog):
             return await inter.send("Nothing is playing.")
 
         await self.player.stop()
+        self.queue.clear()
         return await inter.send("Stopped.")
 
     @nextcord.slash_command(description="ping_player", guild_ids=test_servers)

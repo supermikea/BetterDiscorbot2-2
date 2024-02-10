@@ -17,7 +17,7 @@ class Music(commands.Cog):
         self.queue_loop.start()
 
     # noinspection PyUnboundLocalVariable
-    @nextcord.slash_command(description="play something", guild_ids=test_servers)
+    @nextcord.slash_command(description="play something")
     async def play(self, inter: nextcord.Interaction, query: str):
         print("[DEBUG] play command called with arg: " + query)
         if not inter.guild.voice_client:
@@ -44,6 +44,7 @@ class Music(commands.Cog):
         # accessing the first track in the list
         if len(tracks) != 1:
             self.queue += tracks
+            return await inter.send(f"Added {len(tracks.tracks)} tracks to the queue.")
         else:
             track = tracks[0]
 
@@ -57,7 +58,7 @@ class Music(commands.Cog):
 
         await inter.send(f"Playing {track.title}.")
 
-    @nextcord.slash_command(description="display the queue", guild_ids=test_servers)
+    @nextcord.slash_command(description="display the queue")
     async def queue(self, inter: nextcord.Interaction):
         if not self.queue:
             return await inter.send("The queue is empty.")
@@ -71,7 +72,7 @@ class Music(commands.Cog):
 
         await inter.send(f"Queue:\n{temp}")
 
-    @nextcord.slash_command(description="Pause the current song", guild_ids=test_servers)
+    @nextcord.slash_command(description="Pause the current song")
     async def pause(self, inter: nextcord.Interaction):
         if not self.player.current:
             return await inter.send("Nothing is playing.")
@@ -83,7 +84,7 @@ class Music(commands.Cog):
             await self.player.pause()
             return await inter.send("Paused.")
 
-    @nextcord.slash_command(description="Stop the current song", guild_ids=test_servers)
+    @nextcord.slash_command(description="Stop the current song")
     async def stop(self, inter: nextcord.Interaction):
         if not self.player.current:
             return await inter.send("Nothing is playing.")
@@ -92,12 +93,12 @@ class Music(commands.Cog):
         self.queue.clear()
         return await inter.send("Stopped.")
 
-    @nextcord.slash_command(description="ping_player", guild_ids=test_servers)
+    @nextcord.slash_command(description="ping_player")
     async def ping_player(self, inter: nextcord.Interaction):
         await inter.send("pong")
         await inter.send("voice_client latency: " + str(self.player.ping) + "ms")
 
-    @nextcord.slash_command(description="skip the current song", guild_ids=test_servers)
+    @nextcord.slash_command(description="skip the current song")
     async def skip(self, inter: nextcord.Interaction):
         if not self.player.current:
             return await inter.send("Nothing is playing.")
@@ -105,14 +106,15 @@ class Music(commands.Cog):
         await self.player.stop()
         return await inter.send("Skipped.")
 
-    @nextcord.slash_command(description="give stsatus info", guild_ids=test_servers)
+    @nextcord.slash_command(description="give stsatus info")
     async def status(self, inter: nextcord.Interaction):
         if not self.player.current:
             return await inter.send("Nothing is playing.")
 
-        await inter.send(f"Currently playing: {self.player.current.title}")
-        await inter.send(f"Track length: {self.player.current.length}")
-        await inter.send(f"Queue length: {len(self.queue)}")
+        await inter.send(f"Currently playing: {self.player.current.title}"
+                         f"by {self.player.current.author}"
+                         f"at {self.player.position}/{self.player.current.duration}."
+                         f"next up: {self.queue[0].title}.")
 
     # queue loop
     @tasks.loop(seconds=1)

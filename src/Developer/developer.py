@@ -7,8 +7,6 @@ import os
 import subprocess
 import sys
 
-test_servers = [1030579093659471913]
-
 
 class Developer(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -18,7 +16,7 @@ class Developer(commands.Cog):
     @commands.command(hidden=True)
     async def restart(self, ctx):
         await ctx.reply("Sure Mike!\n restarting...")
-        os.system("python3 \"/home/ubuntu/BetterDiscorbot2-2/src/main.py\" &")
+        os.system("python3 \"/home/ubuntu/discor_bot/BetterDiscorbot2-2/src/restart.py\" &")
         sys.exit()
 
 

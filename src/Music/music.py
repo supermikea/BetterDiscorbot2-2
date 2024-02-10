@@ -15,6 +15,7 @@ class Music(commands.Cog):
         self.queue: list[mafic.Track] = []
         self.player = mafic.Player
         self.queue_loop.start()
+        self.ensure_queue_loop.start()
 
     # noinspection PyUnboundLocalVariable
     @nextcord.slash_command(description="play something")
@@ -39,19 +40,22 @@ class Music(commands.Cog):
         # check for playlist
         if isinstance(tracks, mafic.Playlist):
             self.queue += tracks.tracks
-            return await inter.send(f"Added {len(tracks.tracks)} tracks to the queue.")
-
-        # accessing the first track in the list
-        if len(tracks) != 1:
-            self.queue += tracks
-            return await inter.send(f"Added {len(tracks.tracks)} tracks to the queue.")
+            await inter.send(f"Added {len(tracks.tracks)} tracks to the queue.")
+            playlist = True
         else:
+            playlist = False
             track = tracks[0]
 
         # check if something is already playing
-        if self.player.current:
+        if self.player.current and not playlist:
             await inter.send(f"Added {track.title} to the queue.")
             self.queue.append(track)
+            return
+
+        # playlist logic
+        if playlist:
+            if not self.player.current:
+                await self.player.play(self.queue.pop(0))
             return
 
         await self.player.play(track)
@@ -106,24 +110,32 @@ class Music(commands.Cog):
         await self.player.stop()
         return await inter.send("Skipped.")
 
-    @nextcord.slash_command(description="give stsatus info")
+    @nextcord.slash_command(description="give status info")
     async def status(self, inter: nextcord.Interaction):
         if not self.player.current:
             return await inter.send("Nothing is playing.")
 
-        await inter.send(f"Currently playing: {self.player.current.title}"
-                         f"by {self.player.current.author}"
-                         f"at {self.player.position}/{self.player.current.duration}."
-                         f"next up: {self.queue[0].title}.")
+        await inter.send(f"Currently playing: {self.player.current.title}\n"
+                         f"by {self.player.current.author}\n"
+                         f"at {self.player.position}/{self.player.current.length}.\n"
+                         f"next up: {self.queue[0].title}.\n")
 
     # queue loop
     @tasks.loop(seconds=1)
     async def queue_loop(self):
+        print("[DEBUG] queue loop")
+        if not self.queue:
+            print("[DEBUG] no tracks in queue")
 
-        if not self.player.current:
+        if not self.player.current and self.queue:
+            print("[DEBUG] no current track")
             track = self.queue.pop(0)
             await self.player.play(track)
-            return
 
-        if self.player.paused:
-            return
+        print("[DEBUG] no condition met")
+
+    @tasks.loop(seconds=1)
+    async def ensure_queue_loop(self):
+        if not self.queue_loop.is_running():
+            self.queue_loop.start()
+            print("[DEBUG] queue loop restarted")

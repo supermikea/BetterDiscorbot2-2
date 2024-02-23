@@ -110,6 +110,7 @@ class Music(commands.Cog):
         await self.player.stop()
         return await inter.send("Skipped.")
 
+    # give status info
     @nextcord.slash_command(description="give status info")
     async def status(self, inter: nextcord.Interaction):
         if not self.player.current:

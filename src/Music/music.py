@@ -116,10 +116,11 @@ class Music(commands.Cog):
         if not self.player.current:
             return await inter.send("Nothing is playing.")
 
+        temp = "None"
         await inter.send(f"Currently playing: {self.player.current.title}\n"
                          f"by {self.player.current.author}\n"
                          f"at {self.player.position}/{self.player.current.length}.\n"
-                         f"next up: {self.queue[0].title}.\n")
+                         f"next up: {self.queue[0].title if self.queue is True else temp}.\n")
 
     # queue loop
     @tasks.loop(seconds=1)

@@ -6,6 +6,7 @@ from nextcord.ext.commands import Bot
 import os
 import subprocess
 import sys
+import asyncio
 
 
 class Developer(commands.Cog):
@@ -16,9 +17,12 @@ class Developer(commands.Cog):
     @commands.command(hidden=True)
     async def restart(self, ctx):
         await ctx.reply("Sure Mike!\n restarting...")
-        os.system("python3 \"/home/ubuntu/discor_bot/BetterDiscorbot2-2/src/restart.py\" &")
+        # clean exit
+        await self.bot.pool.close()
+        await self.bot.close()
+        pwd = os.path.dirname(os.path.realpath(__file__))
+        os.system(f"python3 \"{pwd}/../restart.py\" &")
         sys.exit()
-
 
     @commands.check(commands.is_owner())
     @commands.command(hidden=True)
@@ -26,7 +30,6 @@ class Developer(commands.Cog):
         await ctx.reply("Sure Mike!\n updating...")
         output = subprocess.run(["git", "pull"], capture_output=True).stdout
         await ctx.reply("Updated? here is the output:\n" + output.decode("utf-8"))
-
 
     @commands.check(commands.is_owner())
     @commands.command(hidden=True)

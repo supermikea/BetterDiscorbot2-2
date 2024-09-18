@@ -11,8 +11,8 @@ if pid == 0:
     # independent process
     os.setsid()
     os.system(command)
-    print("DYING")
+    print("DYING") #lol
     sys.exit(0)
 else:
-    print("DYING 2")
+    print("DYING 2") #lmao
     sys.exit(0)

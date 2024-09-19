@@ -19,51 +19,59 @@ class Economy(commands.Cog):
         # get the economy data
         global economyData
         try:  # open economy.json and account for all the errors
-            economyData = open("economy.json", "r").read()
+            economyData = open("economy.json", "r")
         except FileNotFoundError as e:
             log("warning", "economy.json not found, continuing with empty economyData")
             economyData = {}
         except Exception as e:
             log("warning", "error occured while opening economy.json, continuing with empty economyData")
             economyData = {}
-
         if economyData == "":  # load economy.json contents into dict
             log("warning", "economy.json empty, continuing with empty economyData")
             economyData = {}
         else:
             try:
                 log("debug", "loading economyData.json")
-                economyData = dict(json.loads(economyData))  # if everything goes well this should execute
+                economyData = json.load(economyData)  # if everything goes well this should execute
             except Exception as e:
-                log("warning", f"could not parse economyData, continuing with empty economyData\n{e}")
+                log("warning", f"could not parse economyData, continuing with empty economyData:\n{e}")
                 economyData = {}
-        log("debug", type(economyData))
         # --
 
-    def check_user(self, username):  # checks if user exists in economy data
-        if not economyData.__contains__(username):
-            economyData[username] = {"money": 0}
+    def check_user(self, id):  # checks if user exists in economy data
+        if not str(id) in economyData:
+            economyData[str(id)] = {"money": 0}
+            self.update_economy_file()
 
-    def add_money(self, username, amount):  # adds money to specified account (this shouldn't need a comment)
-        self.check_user(username)
-        economyData[username]['money'] += amount
-        open("economy.json", 'w').write(json.dumps(str(economyData)))
+    def add_money(self, id, amount):  # adds money to specified account (this shouldn't need a comment)
+        self.check_user(id)
+        economyData[str(id)]['money'] += amount
+        self.update_economy_file()
 
-    @nextcord.slash_command(description="give coins to other user")
-    async def transact(self, interaction: nextcord.Interaction):
-        self.check_user(interaction.user.name)
-        await interaction.response.send_message(str(economyData) + " | "+interaction.user.name)
+    def update_economy_file(self):  # write economyData to economy.json
+        with open("economy.json", "w") as file:
+            json.dump(economyData, file, indent=4)  # Using indent=4 for pretty printing
 
-    @nextcord.slash_command(description="try to find money")
-    async def scrunge(self, interaction: nextcord.Interaction):
-        amount = random.randint(0, 15)
-        self.add_money(interaction.user.name, amount)
-        await interaction.send(f"You found ${amount}!")
+    @nextcord.slash_command(description="give cookies to other user")
+    async def transact(self, interaction: nextcord.Interaction, recipient: nextcord.User, amount: int):
+        log("debug", str(economyData[str(interaction.user.id)]['money']) + "|| " + str(type(interaction.user.id)))
+        if not (economyData[str(interaction.user.id)]['money'] - amount) >= 0:
+            await interaction.send(f"You don't have enough cookies for that!")
+            return
+        self.add_money(interaction.user.id, -amount)
+        self.add_money(recipient.id, amount)
+        await interaction.send(f"You gave {amount} cookies to {recipient.name}!")
+
+    @nextcord.slash_command(description="try to find cookies")
+    async def scavenge(self, interaction: nextcord.Interaction):
+        amount = random.randint(1, 40)
+        self.add_money(interaction.user.id, amount)
+        await interaction.send(f"You found {amount} cookies!")
 
     @nextcord.slash_command(description="check how much money you have")
-    async def check_money(self, interaction: nextcord.Interaction):
-        money = economyData[interaction.user.name]['money']
-        await interaction.send(f"You currently have ${money}")
+    async def balance(self, interaction: nextcord.Interaction):
+        self.check_user(interaction.user.id)
+        await interaction.send(f"You currently have {economyData[str(interaction.user.id)]['money']} cookies")
 
 
 

@@ -9,6 +9,7 @@ import mafic
 
 test_servers = [1030579093659471913]
 
+
 def log(prefix, message):
     utils.log(prefix, "music", message)
 

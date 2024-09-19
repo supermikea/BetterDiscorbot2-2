@@ -9,6 +9,7 @@ from nextcord.ext import commands
 from General.general import General
 from Music.music import Music
 from Developer.developer import Developer
+from Economy.economy import Economy
 
 import mafic
 
@@ -53,6 +54,7 @@ if __name__ == "__main__":
     bot.add_cog(General(bot))
     bot.add_cog(Music(bot))
     bot.add_cog(Developer(bot))
+    bot.add_cog(Economy(bot))
     token = write_read_f('~', location="/token")
     # subprocess.Popen(["java", "-jar", "lavalink/Lavalink.jar"])
     # time.sleep(5)  # give lavalink time to start

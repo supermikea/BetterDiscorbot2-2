@@ -3,10 +3,14 @@ import asyncio
 import nextcord
 from nextcord import SlashOption
 from nextcord.ext import commands, tasks
+from src.Utils import utils
 
 import mafic
 
 test_servers = [1030579093659471913]
+
+def log(prefix, message):
+    utils.log(prefix, "music", message)
 
 
 class Music(commands.Cog):
@@ -20,7 +24,7 @@ class Music(commands.Cog):
     # noinspection PyUnboundLocalVariable
     @nextcord.slash_command(description="play something")
     async def play(self, inter: nextcord.Interaction, query: str):
-        print("[DEBUG] play command called with arg: " + query)
+        log("debug", f"play command called with arg: {query}")
         if not inter.guild.voice_client:
             self.player = await inter.user.voice.channel.connect(cls=mafic.Player)
         else:
@@ -116,28 +120,28 @@ class Music(commands.Cog):
         if not self.player.current:
             return await inter.send("Nothing is playing.")
 
-        temp = "None"
+        noNextSongMsg = "None"
         await inter.send(f"Currently playing: {self.player.current.title}\n"
                          f"by {self.player.current.author}\n"
                          f"at {int(self.player.position/1000)}/{int(self.player.current.length/1000)}.\n"
-                         f"next up: {self.queue[0].title if self.queue is True else temp}.\n")
+                         f"next up: {self.queue[0].title if self.queue is True else noNextSongMsg}.\n")
 
     # queue loop
     @tasks.loop(seconds=1)
     async def queue_loop(self):
-        print("[DEBUG] queue loop")
+        log("debug", "queue loop")
         if not self.queue:
-            print("[DEBUG] no tracks in queue")
+            log("debug", "no tracks in queue")
 
         if not self.player.current and self.queue:
-            print("[DEBUG] no current track")
+            log("debug", "no current track")
             track = self.queue.pop(0)
             await self.player.play(track)
 
-        print("[DEBUG] no condition met")
+        log("debug", "no condition met")
 
     @tasks.loop(seconds=1)
     async def ensure_queue_loop(self):
         if not self.queue_loop.is_running():
             self.queue_loop.start()
-            print("[DEBUG] queue loop restarted")
+            log("debug", "queue loop restarted")

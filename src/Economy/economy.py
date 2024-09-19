@@ -55,6 +55,9 @@ class Economy(commands.Cog):
     @nextcord.slash_command(description="give cookies to other user")
     async def transact(self, interaction: nextcord.Interaction, recipient: nextcord.User, amount: int):
         log("debug", str(economyData[str(interaction.user.id)]['money']) + "|| " + str(type(interaction.user.id)))
+        if amount < 0:
+            await interaction.send(f"You can't transact negative amounts")
+            return
         if not (economyData[str(interaction.user.id)]['money'] - amount) >= 0:
             await interaction.send(f"You don't have enough cookies for that!")
             return
@@ -71,7 +74,11 @@ class Economy(commands.Cog):
     @nextcord.slash_command(description="check how much money you have")
     async def balance(self, interaction: nextcord.Interaction):
         self.check_user(interaction.user.id)
-        await interaction.send(f"You currently have {economyData[str(interaction.user.id)]['money']} cookies")
+        balance = economyData[str(interaction.user.id)]['money']
+        if balance >= 0:
+            await interaction.send(f"You currently have {balance} cookies")
+        else:
+            await interaction.send(f"You are currently {-balance} cookies in debt to the cookie gods, ***you will hear from the tax collecter soon***")
 
 
 

@@ -54,7 +54,7 @@ if __name__ == "__main__":
     bot.add_cog(General(bot))
     bot.add_cog(Music(bot))
     bot.add_cog(Developer(bot))
-    bot.add_cog(Economy(bot))
+    bot.add_cog(Economy(bot, 25))
     token = write_read_f('~', location="/token")
     # subprocess.Popen(["java", "-jar", "lavalink/Lavalink.jar"])
     # time.sleep(5)  # give lavalink time to start

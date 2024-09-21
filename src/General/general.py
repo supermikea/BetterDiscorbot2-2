@@ -5,10 +5,12 @@ from nextcord.ext.commands import Bot
 
 import random
 
+from Utils.utils import log
 
 class General(commands.Cog):
-    def __init__(self, bot: commands.Bot):
+    def __init__(self, bot: commands.Bot, loglevel=20):
         self.bot = bot
+        self.log = log(loglevel=loglevel, classname="general")
 
     @nextcord.slash_command(description="Ping command")
     async def ping(self, interaction: nextcord.Interaction):

@@ -2,10 +2,16 @@ import sys
 
 class log:
 
-    def __init__(self, loglevel=0) -> None:
+    def __init__(self, loglevel=0, classname="NO CLASSNAME SPECIFIED") -> None:
         self.loglevel = loglevel
+        self.className = classname
 
-    def log(self, prefix, className, message):
+    def __call__(self, prefix, message, classname=""):
+        return self.log(prefix, message, classname,)
+
+    def log(self, prefix, message, className=""):
+        if not className:
+            className == self.className
         if self.loglevel == 0:
             return
         if prefix == "warning" or prefix == "error":

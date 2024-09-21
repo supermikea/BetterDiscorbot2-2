@@ -3,29 +3,27 @@ import asyncio
 import nextcord
 from nextcord import SlashOption
 from nextcord.ext import commands, tasks
-from src.Utils import utils
-
 import mafic
+
+from Utils.utils import log
 
 test_servers = [1030579093659471913]
 
 
-def log(prefix, message):
-    utils.log(prefix, "music", message)
-
-
 class Music(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot, loglevel=20):
         self.bot: commands.Bot = bot
         self.queue: list[mafic.Track] = []
         self.player = mafic.Player
         self.queue_loop.start()
         self.ensure_queue_loop.start()
+        self.log = log(loglevel=loglevel, classname="music")
 
     # noinspection PyUnboundLocalVariable
     @nextcord.slash_command(description="play something")
     async def play(self, inter: nextcord.Interaction, query: str):
-        log("debug", f"play command called with arg: {query}")
+        
+        self.log("debug", f"play command called with arg: {query}")
         if not inter.guild.voice_client:
             self.player = await inter.user.voice.channel.connect(cls=mafic.Player)
         else:
@@ -130,19 +128,19 @@ class Music(commands.Cog):
     # queue loop
     @tasks.loop(seconds=1)
     async def queue_loop(self):
-        log("debug", "queue loop")
+        self.log("debug", "queue loop")
         if not self.queue:
-            log("debug", "no tracks in queue")
+            self.log("debug", "no tracks in queue")
 
         if not self.player.current and self.queue:
-            log("debug", "no current track")
+            self.log("debug", "no current track")
             track = self.queue.pop(0)
             await self.player.play(track)
 
-        log("debug", "no condition met")
+        self.log("debug", "no condition met")
 
     @tasks.loop(seconds=1)
     async def ensure_queue_loop(self):
         if not self.queue_loop.is_running():
             self.queue_loop.start()
-            log("debug", "queue loop restarted")
+            self.log("debug", "queue loop restarted")

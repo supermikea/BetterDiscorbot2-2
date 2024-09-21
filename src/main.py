@@ -4,6 +4,7 @@ import time
 
 import nextcord
 from nextcord.ext import commands
+import mafic
 
 # import subcommands
 from General.general import General
@@ -11,7 +12,7 @@ from Music.music import Music
 from Developer.developer import Developer
 from Economy.economy import Economy
 
-import mafic
+from Utils.utils import log
 
 intents = nextcord.Intents.all()
 
@@ -39,14 +40,19 @@ class Bot(commands.Bot):
 
         self.command_prefix = "~"
         self.description = "miauw"
+        self.log = log(loglevel=20, classname="main")
 
     async def add_nodes(self):
-        await self.pool.create_node(
-            host="127.0.0.1",
-            port=2333,
-            label="MAIN",
-            password="mikeiscool",
-        )
+        try:
+            await self.pool.create_node(
+                host="127.0.0.1",
+                port=2333,
+                label="MAIN",
+                password="mikeiscool",
+            )
+        except ConnectionRefusedError as e:
+            self.log("error", "there will not be any music nor voice: error as {e}")
+            
 
 
 if __name__ == "__main__":
@@ -54,7 +60,7 @@ if __name__ == "__main__":
     bot.add_cog(General(bot))
     bot.add_cog(Music(bot))
     bot.add_cog(Developer(bot))
-    bot.add_cog(Economy(bot, 25))
+    bot.add_cog(Economy(bot))
     token = write_read_f('~', location="/token")
     # subprocess.Popen(["java", "-jar", "lavalink/Lavalink.jar"])
     # time.sleep(5)  # give lavalink time to start

@@ -8,10 +8,12 @@ import subprocess
 import sys
 import asyncio
 
+from Utils.utils import log
 
 class Developer(commands.Cog):
-    def __init__(self, bot: commands.Bot):
+    def __init__(self, bot: commands.Bot, loglevel=20):
         self.bot = bot
+        self.log = log(loglevel=loglevel, classname="developer")
 
     @commands.check(commands.is_owner())
     @commands.command(hidden=True)

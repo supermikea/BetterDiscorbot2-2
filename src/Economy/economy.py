@@ -3,40 +3,37 @@ from nextcord import SlashOption
 from nextcord.ext import commands, tasks
 from nextcord.ext.commands import Bot
 import json
-from src.Utils import utils
 import time
 import collections
 import random
 
-
-def log(prefix, message):
-    utils.log(prefix, "economy", message)
-
+from Utils.utils import log
 
 class Economy(commands.Cog):
-    def __init__(self, bot: commands.Bot, scavenge_cooldown):
+    def __init__(self, bot: commands.Bot, scavenge_cooldown=25, loglevel=20):
         self.bot = bot
         self.scavenge_cooldown = scavenge_cooldown
+        self.log = log(loglevel=loglevel, classname="ecomony")
 
         # get the economy data
         self.economyData = {}
         try:  # open economy.json and account for all the errors
             economyData = open("economy.json", "r")
         except FileNotFoundError as e:
-            log("warning", "economy.json not found, continuing with empty economyData")
+            self.log("warning", "economy.json not found, continuing with empty economyData")
             economyData = {}
         except Exception as e:
-            log("warning", "error occured while opening economy.json, continuing with empty economyData")
+            self.self.log("warning", "error occured while opening economy.json, continuing with empty economyData")
             economyData = {}
         if economyData == "":  # load economy.json contents into dict
-            log("warning", "economy.json empty, continuing with empty economyData")
+            self.log("warning", "economy.json empty, continuing with empty economyData")
             economyData = {}
         else:
             try:
-                log("debug", "loading economyData.json")
+                self.log("debug", "loading economyData.json")
                 economyData = json.load(economyData)  # if everything goes well this should execute
             except Exception as e:
-                log("warning", f"could not parse economyData, continuing with empty economyData:\n{e}")
+                self.log("warning", f"could not parse economyData, continuing with empty economyData:\n{e}")
                 economyData = {}
 
         self.economyData = collections.defaultdict(int, economyData)  # turn economyData into defaultdict, so we don't get keyerror all the time
@@ -77,7 +74,7 @@ class Economy(commands.Cog):
     # commands
     @nextcord.slash_command(description="give cookies to other user")
     async def transact(self, interaction: nextcord.Interaction, recipient: nextcord.User, amount: int):
-        log("debug", str(self.economyData[str(interaction.user.id)]['money']) + " || " + str(type(interaction.user.id)))
+        self.log("debug", str(self.economyData[str(interaction.user.id)]['money']) + " || " + str(type(interaction.user.id)))
         if amount < 0:
             await interaction.send(f"You can't transact negative amounts")
             return

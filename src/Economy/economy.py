@@ -23,7 +23,7 @@ class Economy(commands.Cog):
             self.log("warning", "economy.json not found, continuing with empty economyData")
             economyData = {}
         except Exception as e:
-            self.self.log("warning", "error occured while opening economy.json, continuing with empty economyData")
+            self.log("warning", "error occured while opening economy.json, continuing with empty economyData")
             economyData = {}
         if economyData == "":  # load economy.json contents into dict
             self.log("warning", "economy.json empty, continuing with empty economyData")
@@ -37,7 +37,7 @@ class Economy(commands.Cog):
                 economyData = {}
 
         self.economyData = collections.defaultdict(int, economyData)  # turn economyData into defaultdict, so we don't get keyerror all the time
-        #print(type(economyData))
+        print(type(self.economyData))
         # --
 
     #boilerplate
@@ -65,11 +65,18 @@ class Economy(commands.Cog):
 
     def get_used_time(self, id: str, command: str):
         self.check_user(id)
-        return self.economyData[id]["command-info"][command]["last-used"]
+        print(type(self.economyData))
+        return self.economyData[id].get("command-info").get(command).get("last-used")
 
     def set_used_time(self, id: str, command: str, time: float):
         self.check_user(id)
         self.economyData[id]["command-info"][command]["last-used"] = time
+
+    def check_cooldown(self, id: str, command: str, cooldown):
+        if time.time() - self.get_used_time(id, command) - cooldown > 0:
+            return True
+        else:
+            return False
 
     # commands
     @nextcord.slash_command(description="give cookies to other user")
@@ -87,7 +94,7 @@ class Economy(commands.Cog):
 
     @nextcord.slash_command(description="try to find cookies")
     async def scavenge(self, interaction: nextcord.Interaction):
-        if not time.time() - self.get_used_time(str(interaction.user.id), "scavenge") - self.scavenge_cooldown < time.time():
+        if not self.check_cooldown(str(interaction.user.id), "scavenge", self.scavenge_cooldown):
             await interaction.send(f"You have to wait another {time.time() - self.get_used_time(str(interaction.user.id), "scavenge") - self.scavenge_cooldown} seconds before using this")
         amount = random.randint(1, 40)
         self.add_money(interaction.user.id, amount)

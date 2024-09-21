@@ -1,10 +1,12 @@
 import sys
 import subprocess
 import time
+import aiohttp
 
 import nextcord
 from nextcord.ext import commands
 import mafic
+
 
 # import subcommands
 from General.general import General
@@ -50,8 +52,8 @@ class Bot(commands.Bot):
                 label="MAIN",
                 password="mikeiscool",
             )
-        except ConnectionRefusedError as e:
-            self.log("error", "there will not be any music nor voice: error as {e}")
+        except aiohttp.client_exceptions.ClientConnectorError as e:
+            self.log("error", f"there will not be any music nor voice: error as -> {e}")
             
 
 

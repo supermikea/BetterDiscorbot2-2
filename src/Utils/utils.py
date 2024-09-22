@@ -9,7 +9,7 @@ class log:
     def __call__(self, prefix, message, classname=""):
         return self.log(prefix, message, classname,)
 
-    def log(self, prefix, message, className=""):
+    def log(self, prefix, message, className=""): # return if loglevel is less then required
         if not className:
             className == self.className
         if self.loglevel == 0:

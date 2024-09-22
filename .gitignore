@@ -6,3 +6,7 @@ token
 *.pyc
 .vscode
 .idea
+.venv
+venv
+.env
+env

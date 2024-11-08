@@ -58,8 +58,8 @@ class Bot(commands.Bot):
 
 
 if __name__ == "__main__":
-    subprocess.Popen(["java", "-jar", "lavalink/Lavalink.jar"])
-    time.sleep(5)  # give lavalink time to start
+    #subprocess.Popen(["java", "-jar", "lavalink/Lavalink.jar"]) # TODO autostart bot cause thisd not workie workie???
+    #time.sleep(5)  # give lavalink time to start
     bot = Bot(intents=intents)
     bot.add_cog(General(bot))
     bot.add_cog(Music(bot))

@@ -10,6 +10,19 @@ plugins:
 lavalink:
   plugins:
     - dependency: "com.github.topi314.lavasrc:lavasrc-plugin:4.0.1"
+    - dependency: "dev.lavalink.youtube:youtube-plugin:1.8.3"
+    youtube:
+      enabled: true # Whether this source can be used.
+      allowSearch: true # Whether "ytsearch:" and "ytmsearch:" can be used.
+      allowDirectVideoIds: true # Whether just video IDs can match. If false, only complete URLs will be loaded.
+      allowDirectPlaylistIds: true # Whether just playlist IDs can match. If false, only complete URLs will be loaded.
+      # The clients to use for track loading. See below for a list of valid clients.
+      # Clients are queried in the order they are given (so the first client is queried first and so on...)
+      clients:
+        - MUSIC
+        - ANDROID_VR
+        - WEB
+        - WEBEMBEDDED 
 #    - dependency: "com.github.example:example-plugin:1.0.0" # required, the coordinates of your plugin
 #      repository: "https://maven.example.com/releases" # optional, defaults to the Lavalink releases repository by default
 #      snapshot: false # optional, defaults to false, used to tell Lavalink to use the snapshot repository instead of the release repository
@@ -26,7 +39,7 @@ lavalink:
   server:
     password: "mikeiscool"
     sources:
-      youtube: true
+      youtube: false
       bandcamp: true
       soundcloud: true
       twitch: true

@@ -5,7 +5,7 @@ from nextcord import SlashOption
 from nextcord.ext import commands, tasks
 import mafic
 
-from Utils.utils import log
+from Utils.utils import log, trim_string_to_limit
 
 test_servers = [1030579093659471913]
 
@@ -30,7 +30,7 @@ class Music(commands.Cog):
             self.player = inter.guild.voice_client
 
         # could take a while
-        await inter.response.defer()
+        # await inter.response.defer()
 
         try:
             tracks = await self.player.fetch_tracks(query)
@@ -69,7 +69,6 @@ class Music(commands.Cog):
     async def queue(self, inter: nextcord.Interaction):
         if not self.queue:
             return await inter.send("The queue is empty.")
-
         # format it correctly
         temp = ""
         count = 0
@@ -77,7 +76,10 @@ class Music(commands.Cog):
             count += 1
             temp += str(count) + ". " + i.title + "\n"
 
-        await inter.send(f"Queue:\n{temp}")
+        to_send, tracks_left = trim_string_to_limit(temp, limit=1990, append_message="") # TODO make this less cursed 
+        to_send, _ = trim_string_to_limit(temp, limit=1990, append_message=f"\nWith still \"{tracks_left}\" tracks remaining!") 
+
+        await inter.send(f"Queue:\n{to_send}")
 
     @nextcord.slash_command(description="Pause the current song")
     async def pause(self, inter: nextcord.Interaction):

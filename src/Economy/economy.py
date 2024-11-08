@@ -25,7 +25,7 @@ class Economy(commands.Cog):
         except Exception as e:
             self.log("warning", "error occured while opening economy.json, continuing with empty economyData")
             economyData = {}
-        if economyData == "":  # load economy.json contents into dict
+        if not economyData:  # load economy.json contents into dict
             self.log("warning", "economy.json empty, continuing with empty economyData")
             economyData = {}
         else:
@@ -39,6 +39,9 @@ class Economy(commands.Cog):
         self.economyData = collections.defaultdict(int, economyData)  # turn economyData into defaultdict, so we don't get keyerror all the time
         print(type(self.economyData))
         # --
+
+
+#    def change_entry(self, )
 
     #boilerplate
     def check_user(self, id):  # checks if user exists in economy data
